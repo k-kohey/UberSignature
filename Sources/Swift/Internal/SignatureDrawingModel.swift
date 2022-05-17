@@ -59,13 +59,18 @@ class SignatureDrawingModel: SignatureBezierProviderDelegate {
      This should be set to match the size of the view a signature is being recorded in.
      */
     var imageSize = CGSize.zero {
+        willSet {
+            guard imageSize != newValue else {
+                return
+            }
+
+            // Add the temporary bezier into the current signature image, so the image can be resized
+            endContinuousLine()
+        }
         didSet {
             guard imageSize != oldValue else {
                 return
             }
-            
-            // Add the temporary bezier into the current signature image, so the image can be resized
-            endContinuousLine()
             
             // Resize signature image
             signatureImage = SignatureDrawingModel.generateImage(withImageA: signatureImage, imageB: nil, bezierPath: nil, color: signatureColor, size: imageSize)
